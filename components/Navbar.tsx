@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import posthog from "posthog-js";
 
 const Navbar = () => {
   return (
@@ -14,15 +17,15 @@ const Navbar = () => {
           />
           <p>DevEvents</p>
         </Link>
-        <ul>
+        <ul className="list-none">
           <li>
-            <Link href="/events">Events</Link>
+            <Link href="/events" onClick={() => posthog.capture("nav_link_clicked", { label: "Events", href: "/events" })}>Events</Link>
           </li>
           <li>
-            <Link href="/about">About</Link>
+            <Link href="/about" onClick={() => posthog.capture("nav_link_clicked", { label: "About", href: "/about" })}>About</Link>
           </li>
           <li>
-            <Link href="/contact">Contact</Link>
+            <Link href="/contact" onClick={() => posthog.capture("nav_link_clicked", { label: "Contact", href: "/contact" })}>Contact</Link>
           </li>
         </ul>
       </nav>
