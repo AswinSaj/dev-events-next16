@@ -1,7 +1,7 @@
 import { Event } from "@/database";
 import connectToDatabase from "@/lib/mongodb";
 import { NextRequest, NextResponse } from "next/server";
-import { resolve } from "path";
+// import { resolve } from "path";
 import { v2 as cloudinary } from "cloudinary";
 
 export async function POST(req: NextRequest) {
@@ -10,10 +10,32 @@ export async function POST(req: NextRequest) {
 
     const formData = await req.formData();
 
-    let event;
+    let event: Record<string, unknown> = {};
 
     try {
-      event = Object.fromEntries(formData.entries());
+      for (const [key, value] of formData.entries()) {
+        const stringValue = typeof value === "string" ? value : value;
+
+        let parsedValue: unknown = stringValue;
+        if (typeof stringValue === "string") {
+          const trimmed = stringValue.trim();
+          if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
+            try {
+              parsedValue = JSON.parse(trimmed);
+            } catch {
+              parsedValue = stringValue;
+            }
+          }
+        }
+
+        if (event[key] === undefined) {
+          event[key] = parsedValue;
+        } else if (Array.isArray(event[key])) {
+          (event[key] as Array<unknown>).push(parsedValue);
+        } else {
+          event[key] = [event[key], parsedValue];
+        }
+      }
     } catch (e) {
       return NextResponse.json(
         {
