@@ -124,10 +124,10 @@ const EventSchema = new Schema<EventAttributes>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-EventSchema.index({ slug: 1 }, { unique: true });
+// EventSchema.index({ slug: 1 }, { unique: true });
 
 EventSchema.pre("save", function (this: EventDocument) {
   // Ensure all required text fields are present and normalized.
@@ -155,7 +155,8 @@ EventSchema.pre("save", function (this: EventDocument) {
   this.time = normalizeTime(this.time);
 });
 
-const Event = (models.Event as EventModel) || model<EventAttributes>("Event", EventSchema);
+const Event =
+  (models.Event as EventModel) || model<EventAttributes>("Event", EventSchema);
 
 export { Event };
 export type { EventAttributes, EventDocument };
